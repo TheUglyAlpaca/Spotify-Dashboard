@@ -11,7 +11,7 @@ load_dotenv()
 # Retrieve Spotify credentials from environment variables
 CLIENT_ID = os.environ.get('CLIENT_ID')
 CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
-REDIRECT_URI = 'http://localhost:8000'  # Adjust port if needed
+REDIRECT_URI = 'http://localhost:8000'
 
 # Spotify API Authorization
 sp = spotipy.Spotify(
@@ -35,26 +35,26 @@ top_tracks_short_term = sp.current_user_top_tracks(limit=20, time_range='short_t
 track_names_short_term = [track['name'] for track in top_tracks_short_term['items']]
 artists_short_term = [', '.join([artist['name'] for artist in track['artists']]) for track in top_tracks_short_term['items']]
 
-# Create DataFrame for short-term top tracks (without popularity)
+# Create DataFrame for short-term top tracks
 df_short_term = pd.DataFrame({
     'Track Name': track_names_short_term,
     'Artists': artists_short_term
 })
 
-# Fetch user's top 20 songs in the long term (all-time)
-top_tracks_long_term = sp.current_user_top_tracks(limit=20, time_range='long_term')  # All-time
+# Fetch user's top 20 songs in the long term
+top_tracks_long_term = sp.current_user_top_tracks(limit=20, time_range='long_term')
 
 # Extract track names and artists for long term
 track_names_long_term = [track['name'] for track in top_tracks_long_term['items']]
 artists_long_term = [', '.join([artist['name'] for artist in track['artists']]) for track in top_tracks_long_term['items']]
 
-# Create DataFrame for long-term top tracks (without popularity)
+# Create DataFrame for long-term top tracks
 df_long_term = pd.DataFrame({
     'Track Name': track_names_long_term,
     'Artists': artists_long_term
 })
 
-# Streamlit Layout: Display tables side by side
+#Display tables side by side
 col1, col2 = st.columns(2)
 
 with col1:
@@ -65,7 +65,6 @@ with col2:
     st.subheader('All Time Top 20')
     st.write(df_long_term)
 
-# Add a neat table style
 st.markdown("""
 <style>
     .streamlit-expanderHeader {
@@ -90,17 +89,16 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Add clickable links for both short-term and long-term songs
+# links for both short-term and long-term songs
 st.write("---")
 st.markdown("Want to listen to these songs? Click the names below to open them on Spotify!")
 
-# Short-term top tracks with links
+
 st.markdown("**🎵 Your Top Songs (Last 4 Weeks):**")
 for index, row in df_short_term.iterrows():
     track_url = f"https://open.spotify.com/track/{top_tracks_short_term['items'][index]['id']}"
     st.markdown(f"[{row['Track Name']}]({track_url}) by {row['Artists']}")
 
-# Long-term top tracks with links
 st.write("---")
 st.markdown("**🎶 Your Top Songs (All Time):**")
 for index, row in df_long_term.iterrows():
